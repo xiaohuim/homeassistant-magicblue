@@ -34,8 +34,8 @@ turn            on|off                        Turn on / off the bulb
 exit                                          Exit the script
 > ls
 Listing Bluetooth LE devices in range for 5 minutes.Press CTRL+C to stop searching.
-ID    Name                           Mac address 
---    ----                           ----------- 
+ID    Name                           Mac address
+--    ----                           -----------
 1     LEDBLE-XXXXXXXX                xx:xx:xx:xx:xx:xx
 ```
 
@@ -64,6 +64,6 @@ light:
 - Right now you'll have to manually install the required python module `magicblue`.
 
 ## Todo
-- Brightness control
-- Color control
-- Auto install the required module
+- [x]Brightness control
+- [ ]Color control
+- [ ]Auto install the required module
