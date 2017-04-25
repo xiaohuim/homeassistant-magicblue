@@ -8,7 +8,7 @@ MagicBlue custom component for Home Assistant
 ## Installation
 Copy the `magicbluelight.py` file to :
 ```
-<YOUR_CONFIG_DIR>/custom_component/lights/magicbluelight.py
+<YOUR_CONFIG_DIR>/custom_component/light/magicbluelight.py
 ```
 
 ## Configuration

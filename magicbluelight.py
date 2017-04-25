@@ -3,7 +3,7 @@ import logging
 import voluptuous as vol
 
 # Import the device class from the component that you want to support
-from homeassistant.components.light import ATTR_BRIGHTNESS, Light, PLATFORM_SCHEMA
+from homeassistant.components.light import ATTR_BRIGHTNESS, SUPPORT_BRIGHTNESS, Light, PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
 
 # Home Assistant depends on 3rd party packages for API specific code.
@@ -17,7 +17,7 @@ CONF_VERSION = 'version'
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_NAME): cv.string,
     vol.Required(CONF_ADDRESS): cv.string,
-    vol.Optional(CONF_VERSION, default=3): cv.positive_int
+    vol.Optional(CONF_VERSION, default=9): cv.positive_int
 })
 
 _LOGGER = logging.getLogger(__name__)
@@ -39,11 +39,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     except Exception as e:
         _LOGGER.error('Could not connect to the MagicBlue %s', bulb_mac_address)
 
-    # # Verify that passed in configuration works
-    # if not bulb.is_connected():
-    #     _LOGGER.error('Could not connect to the MagicBlue %s', bulb_mac_address)
-    #     return False
-
     # Add devices
     add_devices([MagicBlueLight(bulb, bulb_name)])
 
@@ -55,8 +50,8 @@ class MagicBlueLight(Light):
         """Initialize an MagicBlueLight."""
         self._light = light
         self._name = name
-        self._state = None
-        self._brightness = None
+        self._state = False
+        self._brightness = 1
 
     @property
     def name(self):
@@ -65,34 +60,37 @@ class MagicBlueLight(Light):
 
     @property
     def brightness(self):
-        """Brightness of the light (an integer in the range 1-255).
-
-        This method is optional. Removing it indicates to Home Assistant
-        that brightness is not supported for this light.
-        """
-        return self._brightness
+        """Return the brightness of the light (an integer in the range 1-255)."""
+        return int(self._brightness * 255)
 
     @property
     def is_on(self):
         """Return true if light is on."""
         return self._state
 
-    def turn_on(self, **kwargs):
-        """Instruct the light to turn on.
+    @property
+    def supported_features(self):
+        """Return the supported features."""
+        return SUPPORT_BRIGHTNESS
 
-        You can skip the brightness part if your light does not support
-        brightness control.
-        """
+    def turn_on(self, **kwargs):
+        """Instruct the light to turn on."""
+
+
         if not self._light.is_connected():
             try:
                 self._light.connect()
             except Exception as e:
                 _LOGGER.error('Could not connect to the MagicBlue %s', bulb_mac_address)
-                self._state = True
                 return
 
-        # self._light.brightness = kwargs.get(ATTR_BRIGHTNESS, 255)
-        self._light.turn_on()
+        if not self._state:
+            self._light.turn_on()
+
+        if ATTR_BRIGHTNESS in kwargs:
+            self._brightness = kwargs[ATTR_BRIGHTNESS] / 255
+            self._light.turn_on(self._brightness)
+
         self._state = True
 
     def turn_off(self, **kwargs):
@@ -102,17 +100,7 @@ class MagicBlueLight(Light):
                 self._light.connect()
             except Exception as e:
                 _LOGGER.error('Could not connect to the MagicBlue %s', bulb_mac_address)
-                self._state = False
                 return
 
         self._light.turn_off()
         self._state = False
-
-    # def update(self):
-    #     """Fetch new state data for this light.
-    #
-    #     This is the only method that should fetch new data for Home Assistant.
-    #     """
-        # self._light.update()
-        # self._state = self._light.is_on()
-        # self._brightness = self._light.brightness
