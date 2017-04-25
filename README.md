@@ -7,13 +7,13 @@ MagicBlue custom component for Home Assistant
 
 ## Installation
 Copy the `magicbluelight.py` file to :
-```sh
+```
 <YOUR_CONFIG_DIR>/custom_component/lights/magicbluelight.py
 ```
 
 ## Configuration
 First, make sure you can see your MagicBlue(s) by running:
-```sh
+```
 $ magicblueshell
 Magic Blue interactive shell v0.2.2
 Type "help" for a list of available commands
@@ -40,7 +40,7 @@ ID    Name                           Mac address
 ```
 
 Modify the following example and add it to your `configuration.yaml` file:
-```sh
+```
 light:
   platform: magicbluelight
     name: 'Living Room'
@@ -48,7 +48,7 @@ light:
     version: 9
 ```
 Multiple devices are supported:
-```sh
+```
 light:
   - platform: magicbluelight
     name: 'Living Room'
