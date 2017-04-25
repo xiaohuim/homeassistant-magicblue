@@ -3,7 +3,7 @@ MagicBlue custom component for Home Assistant
 
 ## Requirement
 
-- [`https://github.com/Betree/magicblue`](http://breakdance.io)
+- [`https://github.com/Betree/magicblue`](https://github.com/Betree/magicblue)
 
 ## Installation
 Copy the `magicbluelight.py` file to :
