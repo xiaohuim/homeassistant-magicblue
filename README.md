@@ -64,6 +64,6 @@ light:
 - Right now you'll have to manually install the required python module `magicblue`.
 
 ## Todo
-- [x]Brightness control
-- [ ]Color control
-- [ ]Auto install the required module
+- [x] Brightness control
+- [ ] Color control
+- [ ] Auto install the required module
