@@ -1,6 +1,10 @@
 # homeassistant-magicblue
 MagicBlue custom component for Home Assistant
 
+[MagicBlue](http://www.gearbest.com/smart-light-bulb/pp_230349.html) is a $9.99 bluetooth LED bulb.
+
+<img src="https://github.com/xiaohuim/homeassistant-magicblue/raw/master/img/magicblue.jpg" height="350" /><img src="https://github.com/xiaohuim/homeassistant-magicblue/raw/master/img/homeassistant.jpg" height="350" /><img src="https://github.com/xiaohuim/homeassistant-magicblue/raw/master/img/homekit.jpg" height="350" />
+
 ## Requirement
 
 - [`https://github.com/Betree/magicblue`](https://github.com/Betree/magicblue)
