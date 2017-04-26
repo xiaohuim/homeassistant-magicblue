@@ -65,5 +65,6 @@ light:
 
 ## Todo
 - [x] Brightness control
-- [ ] Color control
+- [x] Color control
+- [ ] Independent brightness and color control
 - [ ] Auto install the required module

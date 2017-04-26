@@ -3,7 +3,8 @@ import logging
 import voluptuous as vol
 
 # Import the device class from the component that you want to support
-from homeassistant.components.light import ATTR_BRIGHTNESS, SUPPORT_BRIGHTNESS, Light, PLATFORM_SCHEMA
+from homeassistant.components.light import ATTR_BRIGHTNESS, ATTR_RGB_COLOR, SUPPORT_RGB_COLOR, SUPPORT_BRIGHTNESS, Light, PLATFORM_SCHEMA
+
 import homeassistant.helpers.config_validation as cv
 
 # Home Assistant depends on 3rd party packages for API specific code.
@@ -34,10 +35,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     bulb = MagicBlue(bulb_mac_address, bulb_version)
 
-    try:
-        bulb.connect()
-    except Exception as e:
-        _LOGGER.error('Could not connect to the MagicBlue %s', bulb_mac_address)
+    # try:
+    #     bulb.connect()
+    # except Exception as e:
+    #     _LOGGER.error('Could not connect to the MagicBlue %s', bulb_mac_address)
 
     # Add devices
     add_devices([MagicBlueLight(bulb, bulb_name)])
@@ -51,7 +52,8 @@ class MagicBlueLight(Light):
         self._light = light
         self._name = name
         self._state = False
-        self._brightness = 1
+        self._rgb = (255, 255, 255)
+        self._brightness = 255
 
     @property
     def name(self):
@@ -59,9 +61,14 @@ class MagicBlueLight(Light):
         return self._name
 
     @property
+    def rgb_color(self):
+        """Return the RBG color value."""
+        return self._rgb
+
+    @property
     def brightness(self):
         """Return the brightness of the light (an integer in the range 1-255)."""
-        return int(self._brightness * 255)
+        return self._brightness
 
     @property
     def is_on(self):
@@ -71,7 +78,7 @@ class MagicBlueLight(Light):
     @property
     def supported_features(self):
         """Return the supported features."""
-        return SUPPORT_BRIGHTNESS
+        return SUPPORT_BRIGHTNESS | SUPPORT_RGB_COLOR
 
     def turn_on(self, **kwargs):
         """Instruct the light to turn on."""
@@ -87,9 +94,15 @@ class MagicBlueLight(Light):
         if not self._state:
             self._light.turn_on()
 
+        if ATTR_RGB_COLOR in kwargs:
+            self._rgb = kwargs[ATTR_RGB_COLOR]
+            self._brightness = 255
+            self._light.set_color(self._rgb)
+
         if ATTR_BRIGHTNESS in kwargs:
-            self._brightness = kwargs[ATTR_BRIGHTNESS] / 255
-            self._light.turn_on(self._brightness)
+            self._rgb = (255, 255, 255)
+            self._brightness = kwargs[ATTR_BRIGHTNESS]
+            self._light.turn_on(self._brightness / 255)
 
         self._state = True
 
