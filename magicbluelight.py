@@ -54,6 +54,7 @@ class MagicBlueLight(Light):
         self._state = False
         self._rgb = (255, 255, 255)
         self._brightness = 255
+        self._available = False
 
     @property
     def name(self):
@@ -80,15 +81,34 @@ class MagicBlueLight(Light):
         """Return the supported features."""
         return SUPPORT_BRIGHTNESS | SUPPORT_RGB_COLOR
 
+    @property
+    def available(self):
+        return self._available
+
+    def update(self):
+        _LOGGER.debug("{}: MagicBlueLight.update()".format(self))
+        try:
+            if not self._light.test_connection():
+                self._light.connect()
+
+            device_info = self._light.get_device_info()
+
+            self._state = device_info['on']
+            self._rgb = (device_info['r'], device_info['g'], device_info['b'])
+            self._brightness = device_info['brightness']
+            self._available = True
+        except Exception as ex:
+            _LOGGER.debug("Exception during update status: %s", ex)
+            self._available = False
+
     def turn_on(self, **kwargs):
         """Instruct the light to turn on."""
-
-
-        if not self._light.is_connected():
+        _LOGGER.debug("{}: MagicBlueLight.turn_on()".format(self))
+        if not self._light.test_connection():
             try:
                 self._light.connect()
             except Exception as e:
-                _LOGGER.error('Could not connect to the MagicBlue %s', bulb_mac_address)
+                _LOGGER.error('Could not connect to the MagicBlue %s', self._light)
                 return
 
         if not self._state:
@@ -102,18 +122,25 @@ class MagicBlueLight(Light):
         if ATTR_BRIGHTNESS in kwargs:
             self._rgb = (255, 255, 255)
             self._brightness = kwargs[ATTR_BRIGHTNESS]
-            self._light.turn_on(self._brightness / 255)
+            self._light.set_warm_light(self._brightness / 255)
 
         self._state = True
 
     def turn_off(self, **kwargs):
         """Instruct the light to turn off."""
-        if not self._light.is_connected():
+        _LOGGER.debug("{}: MagicBlueLight.turn_off()".format(self))
+        if not self._light.test_connection():
             try:
                 self._light.connect()
             except Exception as e:
-                _LOGGER.error('Could not connect to the MagicBlue %s', bulb_mac_address)
+                _LOGGER.error('Could not connect to the MagicBlue %s', self._light)
                 return
 
         self._light.turn_off()
         self._state = False
+
+    def __str__(self):
+        return "<MagicBlueLight('{}', '{}')>".format(self._light, self._name)
+
+    def __repr__(self):
+        return "<MagicBlueLight('{}', '{}')>".format(self._light, self._name)
